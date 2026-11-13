@@ -1,115 +1,103 @@
-<h1 align="center">Sample Circulation for Claude Code</h1>
+# Sample Circulation for Claude Code
 
-<p align="center">
-  <strong>The open-source sample circulation desk that is just a database and Claude Code.</strong>
-</p>
+Know which piece is with which stylist, when it is due back, and which next shoot depends on its return. A physical sample desk for fashion, lifestyle and beauty brands and PR agencies. Free software under the MIT licence, built by Enterprise DNA for Claude Code, Codex, OpenCode or Cursor.
 
-<p align="center">
-  Created by <a href="https://www.enterprisedna.co"><strong>Enterprise DNA</strong></a>. Free and open source. Works with Claude Code, Codex, OpenCode or Cursor.
-</p>
+| Do it yourself | We customise it | We run it for you |
+|---|---|---|
+| Install the free desk below. | Your collection names, loan rules and Launchmetrics export mapping. [Book a call](https://enterprisedna.co/omni/book/?offer=replace-software&utm_campaign=launchmetrics-samples&utm_medium=readme). | Installed, connected and operated through Omni by Enterprise DNA. One setup fee, then a retainer. [See the offer](https://enterprisedna.co/omni/instead-of/launchmetrics-samples). |
 
-<!-- three-doors -->
-<table align="center">
-  <tr>
-    <td align="center"><strong>Do it yourself</strong><br/>Clone it, run it, own it. Free, MIT.<br/><a href="#quick-start">Quick start</a></td>
-    <td align="center"><strong>We customise it</strong><br/>Your fields, your rules, your Launchmetrics Samples data brought across.<br/><a href="https://enterprisedna.co/omni/book/?utm_source=github&utm_medium=readme&utm_campaign=launchmetrics-samples">Book a call</a></td>
-    <td align="center"><strong>We run it for you</strong><br/>Installed, connected and operated inside Omni. Setup fee, then a retainer.<br/><a href="https://enterprisedna.co/omni/instead-of/launchmetrics-samples?utm_source=github&utm_medium=readme&utm_campaign=launchmetrics-samples">How it works</a></td>
-  </tr>
-</table>
+This project covers reservations, physical handovers, partial returns, damage, stocktakes and collection reviews. It does not recreate the entire Launchmetrics suite, its media valuation or its monitoring network. [Scope and operating limits](docs/why-no-front-end.md).
 
-<p align="center">
-  <a href="#what-is-this">What is this</a> &bull;
-  <a href="#why-no-front-end">Why no front end</a> &bull;
-  <a href="#quick-start">Quick start</a> &bull;
-  <a href="#the-commands">Commands</a> &bull;
-  <a href="#instead-of-launchmetrics-samples">Instead of Launchmetrics Samples</a> &bull;
-  <a href="#want-it-installed-and-run-for-you">Installed for you</a> &bull;
-  <a href="#license">License</a>
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Node-20+-339933?style=flat-square" alt="Node 20+" />
-  <img src="https://img.shields.io/badge/PostgreSQL-any-336791?style=flat-square" alt="PostgreSQL" />
-  <img src="https://img.shields.io/badge/PGlite-embedded-3ecf8e?style=flat-square" alt="PGlite" />
-  <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="MIT License" />
-</p>
-
----
-
-## What is this
-
-Sample Circulation for Claude Code does the job you pay Launchmetrics Samples for, as a Postgres database and a set of agent commands. There is no web front end. You open the folder in [Claude Code](https://claude.com/claude-code) (or Codex, OpenCode, Cursor: see `AGENTS.md`) and ask for what you want in plain language. It runs the right query, and it can answer questions the Launchmetrics Samples dashboard cannot.
-
-<!-- TODO(author): the annual bill. One sentence: what a 10 to 50 person business typically pays Launchmetrics Samples per year, all in, with a source. -->
-
-Want the same thing with a web front end, or built on a different stack? That is a customisation, and it is exactly what Enterprise DNA does: [book a call](https://enterprisedna.co/omni/book/?utm_source=github&utm_medium=readme&utm_campaign=launchmetrics-samples).
-
-<!-- TODO(author): two or three sentences on what this specific product covers and who it is for. -->
-
-## Why no front end
-
-- The front end was only ever there because the database was hard to talk to. That is no longer true.
-- Your data sits in plain Postgres tables you own. Any tool can read them. No export, no lock-in.
-- No seats, no tiers, no add-ons. Read [docs/why-no-front-end.md](docs/why-no-front-end.md) for the honest trade-offs too.
+Launchmetrics' regional Korea pricing page lists its Essentials package from EUR 1,550 monthly billed annually, or EUR 18,600 over twelve months. That is a package benchmark, not a Samples-only price or an ANZ customer invoice. Global Starter pricing and package scope differ. [Sources and selection](docs/research.md).
 
 ## Quick start
 
-Sixty seconds, no database install (an embedded Postgres runs inside Node):
+Node 20 or 22:
 
 ```bash
 git clone https://github.com/Enterprise-DNA-OS/sample-circulation-for-claude-code.git
 cd sample-circulation-for-claude-code
 npm install
+npm test
 npm run demo
+npm run view
+npm run docs
 ```
 
-Then open the folder in Claude Code and type a slash command. <!-- TODO(author): name the first command to try. -->
+Then ask /returns-due or /pull-list. Demo data is fictional: six physical samples, three recipients and four loans, with late returns, a damaged coat and a future pull blocked by an earlier borrower. Dates are relative to the seed date. Running seed again preserves your changes.
 
-### Use it with your own Postgres or Supabase
+The embedded PGlite database lives in .data/db. For shared use, configure DATABASE_URL for a private PostgreSQL database and run npm run migrate. Do not seed the working database. Shared demo seeding requires --demo-database. Access control, backups and restore testing are deployment work; the owner connection bypasses row security and must not be exposed to end users.
 
-Copy `.env.example` to `.env`, set `DATABASE_URL`, then `npm run migrate`. Same commands, shared data, no per-seat fee.
+## Your first hour: ten things to ask for
 
-## The commands
+1. Which overdue pieces are also needed for next week's shoots? (/returns-due and /pull-list)
+2. Which recipients have late returns and damaged pieces in the same history? (/recipient-history)
+3. Which pieces have never circulated despite sitting in an active collection? (/idle-samples)
+4. Which reservations are now blocked by a condition or inventory hold? (/reservations)
+5. Which samples are at home but have not been physically counted recently? (/stocktake-due)
+6. Which collections have the most held pieces beside their circulation counts? (/collection-review)
+7. Which loan has only part of its pieces back, and what is still outstanding? (/card and /returns-due)
+8. Which recipient records need their retention and access evidence reviewed? (/compliance)
+9. Who last changed a sample's condition and what observation supported it? (/card and /audit)
+10. What should Monday's meeting cover across returns, pulls and cupboard counts? (/weekly-review)
 
-<!-- TODO(author): a table of the slash commands in .claude/commands and what each one does. -->
+Each question is answerable by the shipped commands. These are cross-record questions to adapt to your process, not an unsupported claim that Launchmetrics can never answer them. Ask /customise to add a field or change a local rule, and /new-view to turn an answer into a report.
 
-| Command | What it does |
-|---|---|
-| `/...` | ... |
+## Commands
 
-## Instead of Launchmetrics Samples
+- /inventory: List each physical sample and its recorded custody.
+- /contacts: Read recipients and their privacy review records.
+- /loans: Read reservations and dispatched loans.
+- /card: Read one sample and its complete loan, stocktake and note history.
+- /returns-due: Prepare the daily sample callback list.
+- /pull-list: Prepare this week's reserved samples and check readiness.
+- /reservations: Review the forward reservation book.
+- /attention: Triage late returns, missed dispatches, holds and stale stocktakes.
+- /stocktake-due: Plan a physical count of samples recorded at home.
+- /idle-samples: Find pieces unused for sixty days.
+- /utilisation: Review how often each individual sample has circulated.
+- /recipient-history: Review outstanding items, late returns and damage by recipient.
+- /collection-review: Prepare the end-of-season collection review.
+- /compliance: Review privacy evidence and custody terms against cited rules.
+- /audit: Read recorded operators and recent changes.
+- /weekly-review: Prepare Monday's review from returns, pulls, stocktakes and holds.
+- /add: Register a sample or recipient.
+- /set-contact: Update the stated purpose and privacy review evidence.
+- /reserve: Reserve a physical sample for a recipient and date range.
+- /add-item: Add another sample to a reserved loan.
+- /record-loss: Record an authorised loss with supporting evidence without inventing a return.
+- /dispatch: Record a physical handover after all readiness checks pass.
+- /receive: Record all or selected returned items and their condition.
+- /cancel: Cancel an undispatched reservation.
+- /stocktake: Record a physical observation and reconcile an inventory hold.
+- /set-terms: Record the agreed custody terms before dispatch.
+- /retire: Archive or write off a sample that has no active commitments.
+- /log: Append a note to the sample history.
+- /import: Import mapped Launchmetrics inventory into a reconciliation hold.
+- /export: Export every record as a local snapshot and CSV files.
+- /draft-callback: Draft a local callback note from outstanding loan items.
+- /draft-weekly-review: Write the weekly review to a local draft.
+- /customise: Change fields or rules through a tested forward migration.
+- /new-view: Add a branded read-only report.
 
-<!-- TODO(author): how to bring data across from Launchmetrics Samples; link docs/replace-launchmetrics-samples.md -->
+All domain actions use `node scripts/samples.mjs`. Use help for syntax and --json for structured results. Names match case-insensitively and identifiers by prefix; ambiguous matches list candidates and exit unsuccessfully. Writes require --actor, which records attribution rather than authenticating the operator.
 
-## Architecture
+## Bring your records across
 
-```
-sample-circulation-for-claude-code/
-  CLAUDE.md                 how the operator wants this run (routing table + house rules)
-  AGENTS.md                 the same, for Codex / OpenCode / Cursor / Gemini CLI
-  .claude/commands/         the slash commands
-  scripts/                  the CLI the commands drive
-  scripts/lib/db.mjs        one adapter: DATABASE_URL (pg) or embedded PGlite
-  supabase/migrations/      plain SQL schema
-  supabase/seed.sql         demo data
-  docs/                     the thesis and the migration guide
-```
+Export the inventory, map its headings, and run the one-command test import. New samples are held for custody reconciliation. The free importer does not reconstruct current or historical loans from inventory status. [Exact mapping and reconciliation](docs/replace-launchmetrics-samples.md).
 
-## Built for coding agents
+## Paperwork and views
 
-The database, CLI and command recipes work with Claude Code, Codex, OpenCode or Cursor. Ask your coding agent for a new command and have it implement and test the change against the same records.
+Edit brand.json for the business name, colours and logo. The three document types are loan notes, return reconciliations and stocktake records. The three read-only views cover the week, collections and recipient return history. Draft callbacks and weekly reviews stay in drafts/. Nothing sends.
 
-## Contributing
+## Rules that preserve the record
 
-Issues and pull requests are welcome. Keep the shape: plain SQL, a small CLI, a slash command per recurring job, no front end.
+Reservations use inclusive calendar dates and cannot overlap for the same piece. Dispatch checks actual availability and agreed terms. Partial returns keep outstanding custody open. Damaged and missing pieces cannot be dispatched. Historical returns, stocktakes and audit entries cannot be rewritten through normal commands. Privacy evidence checks cite NZ principles 5 and 9 and Australian APP 11. [What the checks mean](docs/compliance.md).
 
-## Want it installed and run for you?
+## Validation
 
-Enterprise DNA installs Sample Circulation for Claude Code for your business, migrates your Launchmetrics Samples data, connects it to the rest of your tools, and runs it for you as part of **Omni**, our managed Command Center. One setup fee, then a monthly retainer.
+`npm test` uses a temporary database and exercises every domain command, overlap and handover rules, partial returns, import rollback and reconciliation, immutable history, JSON output, HTML escaping and report generation. CI runs Node 20 and 22 on Windows and Linux, plus PostgreSQL 16. Demo and tests make no vendor API, mail or carrier calls.
 
-- Book a call: [enterprisedna.co/omni/book](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_medium=readme&utm_campaign=launchmetrics-samples)
-- Read more: [enterprisedna.co/omni/instead-of/launchmetrics-samples](https://enterprisedna.co/omni/instead-of/launchmetrics-samples?utm_source=github&utm_medium=readme&utm_campaign=launchmetrics-samples)
+## Licence
 
-## License
-
-MIT. Copyright (c) 2026 Enterprise DNA.
+MIT. Copyright 2026 Enterprise DNA. Independent software, not affiliated with or endorsed by Launchmetrics. Hosting, agent subscriptions and managed service work have their own costs.

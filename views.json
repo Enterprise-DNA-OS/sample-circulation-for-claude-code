@@ -1,13 +1,35 @@
 [
   {
     "name": "week",
-    "title": "This week",
-    "subtitle": "Sample Circulation for Claude Code: what needs attention, rendered by npm run view",
+    "title": "Sample desk this week",
     "sections": [
       {
-        "title": "Needs attention",
-        "note": "TODO(author): point this at the industry's attention view (overdue, stuck, quiet).",
-        "sql": "select 'replace me' as item, 'TODO(author)' as why"
+        "title": "Attention",
+        "sql": "select * from v_attention order by due nulls last,reference,sample"
+      },
+      {
+        "title": "Upcoming pulls",
+        "sql": "select * from v_reservations order by starts_on,code"
+      }
+    ]
+  },
+  {
+    "name": "collections",
+    "title": "Collection circulation",
+    "sections": [
+      {
+        "title": "Physical samples",
+        "sql": "select barcode,name,brand,season,state,condition,out_on,last_counted,loan_count from v_inventory order by brand,season,barcode"
+      }
+    ]
+  },
+  {
+    "name": "recipients",
+    "title": "Recipient return history",
+    "sections": [
+      {
+        "title": "Recorded loan outcomes",
+        "sql": "select name,organisation,item_loans,outstanding,overdue,returned_late,damaged_returns,recorded_losses from v_recipient_reliability order by overdue desc,name"
       }
     ]
   }

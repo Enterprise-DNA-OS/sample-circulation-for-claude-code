@@ -1,11 +1,49 @@
 [
   {
-    "name": "example",
-    "title": "TODO(author): the first document this industry must produce",
-    "for_each": "select gen_random_uuid() as id, 'Example' as name",
-    "file": "name",
+    "name": "loan-note",
+    "title": "Sample loan note",
+    "for_each": "select id,code from loans where state in ('reserved','out')",
+    "file": "code",
     "sections": [
-      { "title": "Details", "sql": "select 'replace me' as item, $1::text as record_id" }
+      {
+        "title": "Loan details",
+        "layout": "record",
+        "sql": "select l.code,c.name recipient,c.organisation,l.purpose,l.starts_on,l.due_on,l.destination,l.terms_ref,l.shipping_ref,l.state from loans l join contacts c on c.id=l.contact_id where l.id=$1",
+        "note": "Custody record for human review. This is not an invoice or a signed contract."
+      },
+      {
+        "title": "Pieces",
+        "sql": "select barcode,name,brand,season,returned_on from v_custody where loan_id=$1 order by barcode"
+      }
+    ]
+  },
+  {
+    "name": "return-reconciliation",
+    "title": "Sample return reconciliation",
+    "for_each": "select id,code from loans where dispatched_on is not null",
+    "file": "code",
+    "sections": [
+      {
+        "title": "Recorded return condition",
+        "sql": "select barcode,name,due_on,returned_on,return_condition,return_location,lost_on,loss_reason,case when lost_on is not null then 'Recorded loss' when returned_on is null then 'Outstanding' else 'Received' end result from v_custody where loan_id=$1 order by barcode"
+      }
+    ]
+  },
+  {
+    "name": "stocktake-sheet",
+    "title": "Sample stocktake record",
+    "for_each": "select id,barcode from samples",
+    "file": "barcode",
+    "sections": [
+      {
+        "title": "Recorded position",
+        "layout": "record",
+        "sql": "select barcode,name,home_location,state,condition,out_on,last_counted from v_inventory where id=$1"
+      },
+      {
+        "title": "Physical observations",
+        "sql": "select observed_on,location,condition,note,actor from stocktakes where sample_id=$1 order by observed_on desc"
+      }
     ]
   }
 ]
