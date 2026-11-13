@@ -4,6 +4,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { getDb, REPO_ROOT } from './lib/db.mjs';
 import { parseCsv } from './lib/csv.mjs';
+import { table } from './lib/format.mjs';
 export const readQueries={
  inventory:`select id,barcode,name,brand,season,colour,size,home_location,state,condition,out_on,last_counted,loan_count from v_inventory order by barcode`,
  contacts:`select * from contacts order by name,id`,
@@ -15,7 +16,7 @@ export const readQueries={
  'stocktake-due':`select barcode,name,home_location,last_counted,out_on,state,condition from v_inventory where state='active' and out_on is null and coalesce(last_counted,created_at::date)<current_date-30 order by barcode`,
  'idle-samples':`select barcode,name,brand,season,home_location,last_sent,loan_count from v_inventory where state='active' and out_on is null and coalesce(last_sent,created_at::date)<current_date-60 order by barcode`,
  utilisation:`select barcode,name,brand,season,loan_count,last_sent,condition,state from v_inventory order by loan_count desc,barcode`,
- 'recipient-history':`select * from v_recipient_reliability order by overdue desc,returned_late desc,name,id`,
+ 'recipient-history':`select name,organisation,item_loans,outstanding,overdue,returned_late,damaged_returns,recorded_losses from v_recipient_reliability order by overdue desc,returned_late desc,name,id`,
  'collection-review':`select brand,season,count(*)::int samples,count(*) filter(where out_on is not null)::int out,count(*) filter(where condition<>'good' or state='quarantine')::int held,sum(loan_count)::int loans from v_inventory group by brand,season order by brand,season`,
  compliance:`select name,'PURPOSE' rule,'Record why this contact is needed' issue,'https://www.privacy.org.nz/privacy-principles/9/' source from contacts where trim(purpose)=''
  union all select name,'RETENTION_REVIEW','Review whether personal details are still needed','https://www.privacy.org.nz/privacy-principles/9/' from contacts where retention_review is null or retention_review<current_date
@@ -59,7 +60,15 @@ export function decodeImport(file,mapFile){
  const d=Object.fromEntries(Object.entries(map).map(([k,h])=>[k,row[h].trim()]));required(d.barcode,'barcode');required(d.name,'description');
  if(seen.has(d.barcode))throw Error('Duplicate barcode '+d.barcode);seen.add(d.barcode);return {...d,source_data:row};});
 }
-export function pretty(v){if(Array.isArray(v)){if(!v.length)return '(none)';const keys=Object.keys(v[0]);const cell=x=>typeof x==='object'&&x!==null?JSON.stringify(x):String(x??'');return ['| '+keys.join(' | ')+' |','| '+keys.map(()=> '---').join(' | ')+' |',...v.map(r=>'| '+keys.map(k=>cell(r[k]).replace(/\|/g,'/').replace(/\n/g,' ')).join(' | ')+' |')].join('\n');}if(v&&typeof v==='object')return Object.entries(v).map(([k,x])=>typeof x==='object'?'\n'+k+'\n'+pretty(x):k+': '+x).join('\n');return String(v);}
+export function pretty(v){
+ if(Array.isArray(v)){
+  if(!v.length)return '(none)';
+  const keys=Object.keys(v[0]);
+  return table(v,keys.map(key=>({key,label:key.replaceAll('_',' '),format:value=>(typeof value==='object'&&value!==null?JSON.stringify(value):String(value??'')).replace(/\s+/g,' ')})));
+ }
+ if(v&&typeof v==='object')return Object.entries(v).map(([k,x])=>typeof x==='object'?'\n'+k+'\n'+pretty(x):k+': '+x).join('\n');
+ return String(v);
+}
 async function snapshot(db){const out={};for(const t of tables)out[t]=await db.query(`select * from ${t} order by id`);return out;}
 function csv(rows){if(!rows.length)return '';const keys=Object.keys(rows[0]);const q=x=>'"'+String(typeof x==='object'&&x!==null?JSON.stringify(x):x??'').replace(/"/g,'""')+'"';return [keys.map(q).join(','),...rows.map(r=>keys.map(k=>q(r[k])).join(','))].join('\r\n')+'\r\n';}
 async function inner(db,args){const {a,o}=parse(args);const [cmd='help',ref,extra]=a;
