@@ -4,7 +4,7 @@ Know which piece is with which stylist, when it is due back, and which next shoo
 
 | Do it yourself | We customise it | We run it for you |
 |---|---|---|
-| Install the free desk below. | Your collection names, loan rules and Launchmetrics export mapping. [Book a call](https://enterprisedna.co/omni/book/?offer=replace-software&utm_campaign=launchmetrics-samples&utm_medium=readme). | Installed, connected and operated through Omni by Enterprise DNA. One setup fee, then a retainer. [See the offer](https://enterprisedna.co/omni/instead-of/launchmetrics-samples). |
+| Install the free desk below. | Your collection names, loan rules and Launchmetrics export mapping. [Book a call](https://enterprisedna.co/omni/book/?offer=replace-software&utm_campaign=launchmetrics-samples&utm_medium=readme). | Installed, connected and operated through Omni by Enterprise DNA. One setup fee, then a retainer. [See the offer](https://enterprisedna.co/omni/instead-of/launchmetrics-samples?utm_source=github&utm_medium=readme&utm_campaign=launchmetrics-samples). |
 
 This project covers reservations, physical handovers, partial returns, damage, stocktakes and collection reviews. It does not recreate the entire Launchmetrics suite, its media valuation or its monitoring network. [Scope and operating limits](docs/why-no-front-end.md).
 
